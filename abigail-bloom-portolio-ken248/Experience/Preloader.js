@@ -13,6 +13,9 @@ export default class Preloader extends EventEmitter {
         this.camera = this.experience.camera;
         this.world = this.experience.world;
         this.device = this.sizes.device;
+        this.prefersReducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
 
         this.sizes.on("switchdevice", (device) => {
             this.device = device;
@@ -41,7 +44,10 @@ export default class Preloader extends EventEmitter {
             this.timeline.set(".animatedis", { y: 0, yPercent: 100 });
             this.timeline.to(".preloader", {
                 opacity: 0,
+                clipPath: "inset(0 0 100% 0 round 24px)",
                 delay: 1,
+                duration: this.prefersReducedMotion ? 0.01 : 0.8,
+                ease: "power3.inOut",
                 onComplete: () => {
                     document
                         .querySelector(".preloader")
@@ -353,14 +359,25 @@ export default class Preloader extends EventEmitter {
     }
 
     removeEventListeners() {
-        window.removeEventListener("wheel", this.scrollOnceEvent);
-        window.removeEventListener("touchstart", this.touchStart);
-        window.removeEventListener("touchmove", this.touchMove);
+        if (this.scrollOnceEvent) {
+            window.removeEventListener("wheel", this.scrollOnceEvent);
+        }
+        if (this.touchStart) {
+            window.removeEventListener("touchstart", this.touchStart);
+        }
+        if (this.touchMove) {
+            window.removeEventListener("touchmove", this.touchMove);
+        }
     }
 
     async playIntro() {
         this.scaleFlag = true;
         await this.firstIntro();
+        if (this.prefersReducedMotion) {
+            this.removeEventListeners();
+            this.playSecondIntro();
+            return;
+        }
         this.moveFlag = true;
         this.scrollOnceEvent = this.onScroll.bind(this);
         this.touchStart = this.onTouch.bind(this);

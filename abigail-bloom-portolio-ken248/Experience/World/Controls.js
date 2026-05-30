@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import Experience from "../Experience.js";
 import GSAP from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger.js";
@@ -21,6 +20,9 @@ export default class Controls {
         this.circleFirst = this.experience.world.floor.circleFirst;
         this.circleSecond = this.experience.world.floor.circleSecond;
         this.circleThird = this.experience.world.floor.circleThird;
+        this.prefersReducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
 
         GSAP.registerPlugin(ScrollTrigger);
 
@@ -77,12 +79,52 @@ export default class Controls {
                     ".gsap-marker-start, .gsap-marker-end, [asscroll]"
                 ),
             });
+            this.setThankYouCloudsTrigger(asscroll);
         });
         return asscroll;
     }
 
     setSmoothScroll() {
         this.asscroll = this.setupASScroll();
+    }
+
+    setThankYouCloudsTrigger(asscroll) {
+        const threshold = 80;
+
+        this.cloudsVisible = false;
+        this.setCloudsVisible = (active) => {
+            if (this.cloudsVisible === active) return;
+
+            this.cloudsVisible = active;
+            window.dispatchEvent(
+                new CustomEvent("portfolio-cloud-thanks", {
+                    detail: { active },
+                })
+            );
+        };
+
+        if (asscroll) {
+            asscroll.on("update", ({ targetPos, currentPos }) => {
+                const maxScroll = asscroll.maxScroll;
+                const scrollPosition = Math.max(targetPos, currentPos);
+
+                if (!maxScroll) return;
+
+                this.setCloudsVisible(scrollPosition >= maxScroll - threshold);
+            });
+            return;
+        }
+
+        window.addEventListener(
+            "scroll",
+            () => {
+                const maxScroll =
+                    document.documentElement.scrollHeight - window.innerHeight;
+
+                this.setCloudsVisible(window.scrollY >= maxScroll - threshold);
+            },
+            { passive: true }
+        );
     }
 
     setScrollTrigger() {
@@ -305,7 +347,26 @@ export default class Controls {
                             pinSpacing: false,
                         },
                     });
+
+                    if (!this.prefersReducedMotion) {
+                        GSAP.from(section.querySelectorAll(".section-title, .section-heading, .section-text"), {
+                            y: 36,
+                            opacity: 0,
+                            stagger: 0.08,
+                            duration: 0.8,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: section.querySelector(".section-detail-wrapper"),
+                                start: "top 82%",
+                                toggleActions: "play none none reverse",
+                            },
+                        });
+                    }
                 });
+
+                if (!this.asscroll) {
+                    this.setThankYouCloudsTrigger();
+                }
 
                 // All animations
                 // First section -----------------------------------------
