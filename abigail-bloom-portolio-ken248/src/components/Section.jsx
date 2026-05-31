@@ -1,7 +1,6 @@
 import React from "react";
 import ContactList from "./ContactList.jsx";
 import ProgressBar from "./ProgressBar.jsx";
-import SectionDiorama from "./SectionDiorama.jsx";
 import WorkList from "./WorkList.jsx";
 
 export default function Section({ section }) {
@@ -18,7 +17,6 @@ export default function Section({ section }) {
                 <div className="section-spotlight" aria-hidden="true"></div>
                 <div className="section-orbit section-orbit-one" aria-hidden="true"></div>
                 <div className="section-orbit section-orbit-two" aria-hidden="true"></div>
-                <SectionDiorama type={section.id} />
                 <ProgressBar side={section.side} accent={section.accent} />
 
                 <div className={`section-intro-wrapper ${accentText} ${accentBorder}`}>

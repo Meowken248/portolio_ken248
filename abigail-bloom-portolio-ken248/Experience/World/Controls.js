@@ -11,7 +11,10 @@ export default class Controls {
         this.resources = this.experience.resources;
         this.time = this.experience.time;
         this.camera = this.experience.camera;
+        this.roomController = this.experience.world.room;
         this.room = this.experience.world.room.actualRoom;
+        this.lampLight = this.roomController.lampLight;
+        this.lampGlassMaterials = this.roomController.lampGlassMaterials || [];
         this.room.children.forEach((child) => {
             if (child.type === "RectAreaLight") {
                 this.rectLight = child;
@@ -453,7 +456,7 @@ export default class Controls {
                             y: 1,
                             z: 1,
                             ease: "back.out(2)",
-                            duration: 0.3,
+                            duration: 0.45,
                         });
                     }
                     if (child.name === "FloorFirst") {
@@ -513,6 +516,7 @@ export default class Controls {
                 this.secondPartTimeline.add(this.first);
                 this.secondPartTimeline.add(this.second);
                 this.secondPartTimeline.add(this.third);
+                this.addLampLightTimeline(this.secondPartTimeline);
                 this.secondPartTimeline.add(this.fourth, "-=0.2");
                 this.secondPartTimeline.add(this.fifth, "-=0.2");
                 this.secondPartTimeline.add(this.sixth, "-=0.2");
@@ -520,6 +524,59 @@ export default class Controls {
                 this.secondPartTimeline.add(this.eighth);
                 this.secondPartTimeline.add(this.ninth, "-=0.1");
             },
+        });
+    }
+
+    addLampLightTimeline(timeline) {
+        if (!this.lampLight || this.prefersReducedMotion) {
+            return;
+        }
+
+        timeline.add(
+            GSAP.fromTo(
+                this.lampLight,
+                { intensity: 0, distance: 1.6 },
+                {
+                    intensity: 4.1,
+                    distance: 4.2,
+                    duration: 0.85,
+                    ease: "sine.out",
+                }
+            ),
+            "-=0.34"
+        );
+
+        this.lampGlassMaterials.forEach((material, index) => {
+            timeline.add(
+                GSAP.fromTo(
+                    material,
+                    { emissiveIntensity: 0 },
+                    {
+                        emissiveIntensity: 1.55,
+                        duration: 0.75,
+                        ease: "sine.out",
+                    }
+                ),
+                index === 0 ? "<" : "<0.08"
+            );
+        });
+
+        timeline.to(this.lampLight, {
+            intensity: 3.25,
+            duration: 0.8,
+            ease: "sine.inOut",
+        });
+
+        this.lampGlassMaterials.forEach((material) => {
+            timeline.to(
+                material,
+                {
+                    emissiveIntensity: 1.1,
+                    duration: 0.8,
+                    ease: "sine.inOut",
+                },
+                "<"
+            );
         });
     }
     resize() {}

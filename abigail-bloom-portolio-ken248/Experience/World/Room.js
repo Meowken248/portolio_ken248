@@ -51,14 +51,20 @@ export default class Room {
             }
 
             if (child.name === "Computer") {
-                child.children[1].material = new THREE.MeshBasicMaterial({
-                    map: this.resources.items.screen,
-                });
+                this.prepareComputerMaterials(child);
+            }
+
+            if (child.name === "Table Stuff") {
+                this.prepareTableStuffMaterials(child);
             }
 
             if (child.name === "Mini_Floor") {
                 child.position.x = -0.289521;
                 child.position.z = 8.83572;
+            }
+
+            if (child.name === "Lamp") {
+                this.prepareLampMaterials(child);
             }
 
             // if (
@@ -106,6 +112,164 @@ export default class Room {
 
         this.scene.add(this.actualRoom);
         this.actualRoom.scale.set(0.11, 0.11, 0.11);
+        this.setLampLight();
+    }
+
+    setLampLight() {
+        const lamp = this.roomChildren.lamp;
+
+        if (!lamp) return;
+
+        const lampPosition = lamp.position.clone();
+        lampPosition.y += 0.72;
+
+        this.lampLight = new THREE.PointLight(0xffd36f, 0, 2.15, 2);
+        this.lampLight.position.copy(lampPosition);
+        this.actualRoom.add(this.lampLight);
+    }
+
+    prepareComputerMaterials(computer) {
+        computer.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+
+            const materials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+
+            const updatedMaterials = materials.map((material) => {
+                const materialName = material.name?.toLowerCase() || "";
+
+                if (materialName.includes("screen")) {
+                    return new THREE.MeshBasicMaterial({
+                        name: material.name,
+                        map: this.resources.items.screen,
+                        color: 0xff2f2f,
+                    });
+                }
+
+                const clonedMaterial = material.clone();
+
+                if (materialName.includes("computer") || materialName !== "screen") {
+                    clonedMaterial.color.set(0xc7443b);
+                    clonedMaterial.emissive = new THREE.Color(0x4d0b08);
+                    clonedMaterial.emissiveIntensity = 0.16;
+                    clonedMaterial.roughness = 0.58;
+                }
+
+                return clonedMaterial;
+            });
+
+            child.material = Array.isArray(child.material)
+                ? updatedMaterials
+                : updatedMaterials[0];
+        });
+    }
+
+    prepareTableStuffMaterials(tableStuff) {
+        this.keyboardRgbMaterials = [];
+
+        tableStuff.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+
+            const materials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+
+            const updatedMaterials = materials.map((material) => {
+                const materialName = material.name?.toLowerCase() || "";
+                const isKeyboardMaterial =
+                    materialName === "key" ||
+                    materialName === "material.001" ||
+                    materialName === "material";
+
+                if (isKeyboardMaterial) {
+                    const keyboardMaterial = new THREE.MeshBasicMaterial({
+                        name: material.name,
+                        color:
+                            materialName === "key"
+                                ? new THREE.Color().setHSL(0, 0.9, 0.58)
+                                : 0x1b1d23,
+                    });
+
+                    if (materialName === "key") {
+                        this.keyboardRgbMaterials.push(keyboardMaterial);
+                    }
+
+                    return keyboardMaterial;
+                }
+                
+                const clonedMaterial = material.clone();
+                return clonedMaterial;
+            });
+
+            child.material = Array.isArray(child.material)
+                ? updatedMaterials
+                : updatedMaterials[0];
+
+        });
+    }
+
+    getMaterialBounds(mesh, materials, targetNames) {
+        const geometry = mesh.geometry;
+
+        if (!geometry?.attributes?.position || !geometry.groups?.length) return null;
+
+        const targetSet = new Set(targetNames);
+        const indexAttribute = geometry.index;
+        const positionAttribute = geometry.attributes.position;
+        const box = new THREE.Box3();
+        const vertex = new THREE.Vector3();
+        let hasBounds = false;
+
+        geometry.groups.forEach((group) => {
+            const material = materials[group.materialIndex];
+            const materialName = material?.name?.toLowerCase() || "";
+
+            if (!targetSet.has(materialName)) return;
+
+            for (let i = group.start; i < group.start + group.count; i++) {
+                const vertexIndex = indexAttribute ? indexAttribute.getX(i) : i;
+                vertex.fromBufferAttribute(positionAttribute, vertexIndex);
+                box.expandByPoint(vertex);
+                hasBounds = true;
+            }
+        });
+
+        return hasBounds ? box : null;
+    }
+
+    prepareLampMaterials(lamp) {
+        const materials = [];
+
+        lamp.traverse((child) => {
+            if (!child.isMesh || !child.material) return;
+
+            const childMaterials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+            const clonedMaterials = childMaterials.map((material) =>
+                material.clone()
+            );
+
+            child.material = Array.isArray(child.material)
+                ? clonedMaterials
+                : clonedMaterials[0];
+
+            materials.push(...clonedMaterials);
+        });
+
+        const glassMaterials = materials.filter((material) => {
+            const name = material.name?.toLowerCase() || "";
+            return name !== "lamp";
+        });
+
+        this.lampGlassMaterials = glassMaterials.length ? glassMaterials : materials;
+
+        this.lampGlassMaterials.forEach((material) => {
+            material.emissive = new THREE.Color(0xffd36f);
+            material.emissiveIntensity = 0;
+            material.needsUpdate = true;
+        });
     }
 
     setAnimation() {
@@ -134,5 +298,13 @@ export default class Room {
         this.actualRoom.rotation.y = this.lerp.current;
 
         this.mixer.update(this.time.delta * 0.0009);
+
+        if (this.keyboardRgbMaterials) {
+            const elapsed = this.time.elapsed * 0.00022;
+
+            this.keyboardRgbMaterials.forEach((material, index) => {
+                material.color.setHSL((elapsed + index * 0.16) % 1, 0.95, 0.62);
+            });
+        }
     }
 }
