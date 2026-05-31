@@ -143,7 +143,6 @@ export default class Room {
                     return new THREE.MeshBasicMaterial({
                         name: material.name,
                         map: this.resources.items.screen,
-                        color: 0xff2f2f,
                     });
                 }
 
