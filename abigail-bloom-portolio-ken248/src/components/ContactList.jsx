@@ -9,6 +9,11 @@ export default function ContactList({ contacts }) {
                     <span className="content-item-orbit" aria-hidden="true"></span>
                     <h3 className="section-heading contact-title">{contact.title}</h3>
                     <p className="section-text">{contact.text}</p>
+                    {contact.href ? (
+                        <a className="contact-link" href={contact.href} target="_blank" rel="noreferrer">
+                            Open link
+                        </a>
+                    ) : null}
                 </article>
             ))}
         </div>

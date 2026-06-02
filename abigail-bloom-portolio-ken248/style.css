@@ -1182,6 +1182,22 @@ svg{
   transform: translateZ(18px);
 }
 
+.contact-link{
+  display: inline-flex;
+  margin-top: 16px;
+  color: var(--color-green);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: translateZ(20px);
+}
+
+.contact-link:hover{
+  text-decoration: underline;
+}
+
 .project-item:hover .project-title,
 .contact-item:hover .contact-title{
   color: var(--color-blue);

@@ -1,8 +1,8 @@
 export const profile = {
-    intro: "Welcome to my portfolio ken248!",
-    name: "Abigail Bloom",
-    role: "Digital Media Student | 3D Artist",
-    brand: "AbigailBloom",
+    intro: "Welcome to my portfolio!",
+    name: "Huynh Anh Tu",
+    role: "Web Developer",
+    brand: "Ken248",
     label: "Portfolio",
 };
 
@@ -15,51 +15,72 @@ export const sections = [
         moveClass: "first-move",
         accent: "",
         paragraphs: [
-            "Hi there! I'm a third-year digital media student from UK currently studying in Germany. My dream is to work for Disney or Pixar one day.",
-            "I love creating art and playing with my cats! I also like drinking bubble tea and going for hikes! Totally hippie lol. Welcome to my portfolio!",
+            "I'm Huynh Anh Tu, a web developer based in Go Vap, Ho Chi Minh City. I enjoy building clean, practical web interfaces and reliable management systems.",
+            "My background includes front-end development with HTML, CSS, JavaScript and back-end work with PHP/Laravel, MySQL and SQL Server. I am always learning new technologies, improving product quality, and contributing value to real web projects.",
+            "Education: Thu Duc College of Technology, Information Technology, 2024 - 2027.",
         ],
     },
     {
         id: "work",
         number: "02",
-        title: "My Work",
+        title: "Projects",
         side: "right",
         moveClass: "second-move",
         accent: "blue",
         projects: [
             {
-                title: "Candycane Village",
-                text: "This project is in progress but it's about a super colorful village where the entire world including the people are candies. So far the story is that they are set out to explore their space only to realize it's a human that will try to destroy them.",
+                title: "Hotel Booking System",
+                text: "A hotel room booking platform built with HTML, CSS, Bootstrap, JavaScript, PHP and MySQL. I worked on the homepage, room details, checkout flow, admin dashboard, booking features, authentication, post management, search, filtering, and basic security against SQL Injection, XSS and CSRF.",
             },
             {
-                title: "Rebecca's Reddish Radishes",
-                text: "Oh what's that? Why, it's a red radish! Oop, another one! In this playful and comedy animation, Rebecca, a young farmer, decided to plant radishes for the first time, but there is a big twist!",
+                title: "Hospital Management System",
+                text: "A hospital management project developed with HTML, CSS, Bootstrap, Tailwind CSS, PHP/Laravel and MySQL. The system includes patient data management, visit history, hospital news, CSV data handling, role-based access control, and an integrated AI chatbot using Gemini API.",
             },
             {
-                title: "Flora",
-                text: "A heartwarming story about a little orphan girl who tries to find her way back home.",
+                title: "Technical Skills",
+                text: "Front-end: HTML, CSS, JavaScript. Back-end: PHP/Laravel. Databases: MySQL, SQL Server. Tools: Git, GitHub, Docker, VS Code.",
             },
         ],
     },
     {
         id: "contact",
         number: "03",
-        title: "Contact Me",
+        title: "Contact",
         side: "left",
         moveClass: "third-move",
         accent: "green",
         contacts: [
             {
-                title: "ArtStation",
-                text: "I post all my work here. I don't want to link it yet because I want to sort it out a little bit!",
+                title: "Phone",
+                text: "+84 812 816 248",
+            },
+            {
+                title: "Email",
+                text: "anh2482006@gmail.com",
+            },
+            {
+                title: "Location",
+                text: "An Nhon, Go Vap, Ho Chi Minh City",
+            },
+            {
+                title: "GitHub",
+                text: "View repositories and technical work.",
+                href: "https://github.com/search?q=adobe&type=repositories",
+            },
+            {
+                title: "Facebook",
+                text: "Connect with me on Facebook.",
+                href: "https://www.facebook.com/kenn248",
             },
             {
                 title: "Instagram",
-                text: "Check out my personal instagram for travel pics and food and stuff.",
+                text: "Follow my Instagram updates.",
+                href: "https://www.instagram.com/k.e.n248/",
             },
             {
                 title: "LinkedIn",
-                text: "Career updates and so much more!",
+                text: "Career profile and professional updates.",
+                href: "https://www.linkedin.com/in/anh-t%C3%BA-hu%E1%BB%B3nh-b47b44366/",
             },
         ],
     },
